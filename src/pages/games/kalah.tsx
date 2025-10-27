@@ -1,4 +1,5 @@
 import { BackButton } from '@/components/backButton';
+import { KalahGameBoard } from '@/components/kalahGameBoard';
 
 export const KalahPage = () => {
   return (
@@ -8,8 +9,7 @@ export const KalahPage = () => {
         <h1>Kalah</h1>
       </header>
       <main>
-        {/* Kalah game will be implemented here */}
-        <p>Kalah game page - coming soon!</p>
+        <KalahGameBoard />
       </main>
     </div>
   );
