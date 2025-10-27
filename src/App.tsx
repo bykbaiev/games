@@ -1,17 +1,24 @@
-import GameList from './components/GameList';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+import { EntryPage } from '@/pages';
+import { KalahPage } from '@/pages/games/kalah';
 
 import './App.css';
 
 function App() {
   return (
-    <div className="app">
-      <header>
-        <h1>Board Games Collection</h1>
-      </header>
-      <main>
-        <GameList />
-      </main>
-    </div>
+    <BrowserRouter>
+      <div className="app">
+        <Routes>
+          <Route path="/" element={<EntryPage />} />
+          <Route
+            path="/games"
+            element={<Navigate to="/game/kalah" replace />}
+          />
+          <Route path="/game/kalah" element={<KalahPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

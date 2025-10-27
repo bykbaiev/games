@@ -1,11 +1,13 @@
+import { useNavigate } from 'react-router-dom';
 import { games } from '@/data/games';
 
-import './GameList.css';
+import './gameList.css';
 
-function GameList() {
+export const GameList = () => {
+  const navigate = useNavigate();
+
   const handleGameClick = (gameId: string) => {
-    console.log(`Selected game: ${gameId}`);
-    // TODO: Navigate to game
+    navigate(`/game/${gameId}`);
   };
 
   return (
@@ -32,6 +34,4 @@ function GameList() {
       ))}
     </div>
   );
-}
-
-export default GameList;
+};
