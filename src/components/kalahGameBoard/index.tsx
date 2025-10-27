@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, type FC } from 'react';
 
 import { kalahGameSpec } from '@/games/kalah';
 import { botTurn } from '@/bots/play';
@@ -75,71 +75,131 @@ export function KalahGameBoard() {
   return (
     <div className="kalah-container">
       <div className="controls">
-        <button className="new-game-btn" onClick={resetGame}>
-          New Game
-        </button>
+        <NewGameButton onClick={resetGame} />
       </div>
 
-      <div className="player-info">
-        <h2>
-          Player 2 (Bot)
-          {gameState.currentPlayer === 1 && !gameState.ended
-            ? ' (Bot thinking...)'
-            : ''}
-        </h2>
-      </div>
+      <PlayerStatusMessage
+        id={1}
+        currentPlayer={gameState.currentPlayer}
+        isGameOver={gameState.ended}
+        isBot
+      />
 
       <div className="board">
-        <div className="store store-1">
-          <div className="store-value">{store1}</div>
-        </div>
+        <Store value={store1} className="store-1" />
 
         <div className="pits-container">
           <div className="player-1-pits">
             {player1Pits.map((pit) => (
-              <button
-                key={pit.idx}
-                className="pit"
-                disabled
-                onClick={() => handleMove(1, pit.idx)}
-              >
-                <div className="marble-count">{pit.stones}</div>
-                {Array.from({ length: Math.min(pit.stones, 6) }).map((_, i) => (
-                  <div key={i} className="marble"></div>
-                ))}
-              </button>
+              <Pit key={pit.idx} isDisabled stones={pit.stones} />
             ))}
           </div>
 
           <div className="player-0-pits">
             {player0Pits.map((pit) => (
-              <button
+              <Pit
                 key={pit.idx}
-                className="pit"
-                disabled={gameState.currentPlayer !== 0 || pit.stones === 0}
+                isDisabled={gameState.currentPlayer !== 0 || pit.stones === 0}
+                stones={pit.stones}
                 onClick={() => handleMove(0, pit.idx)}
-              >
-                <div className="marble-count">{pit.stones}</div>
-                {Array.from({ length: Math.min(pit.stones, 6) }).map((_, i) => (
-                  <div key={i} className="marble"></div>
-                ))}
-              </button>
+              />
             ))}
           </div>
         </div>
 
-        <div className="store store-0">
-          <div className="store-value">{store0}</div>
-        </div>
+        <Store value={store0} className="store-0" />
       </div>
 
-      <div className="player-info">
-        <h2>Player 1 {gameState.currentPlayer === 0 ? '(Your turn)' : ''}</h2>
-      </div>
+      <PlayerStatusMessage
+        id={0}
+        currentPlayer={gameState.currentPlayer}
+        isGameOver={gameState.ended}
+      />
 
       {gameState.ended && winner !== null && (
-        <div className="game-over">Game Over! Winner: Player {winner + 1}</div>
+        <GameOverMessage winner={winner} />
       )}
     </div>
   );
 }
+
+const playerIdToDisplayNumber = (id: number) => id + 1;
+
+type GameOverMessageProps = {
+  winner: number;
+};
+
+const GameOverMessage: FC<GameOverMessageProps> = ({ winner }) => {
+  return (
+    <div className="game-over">
+      Game Over! Winner: Player {playerIdToDisplayNumber(winner)}
+    </div>
+  );
+};
+
+type PlayerStatusMessageProps = {
+  id: number;
+  currentPlayer: number;
+  isGameOver: boolean;
+  isBot?: boolean;
+};
+
+const PlayerStatusMessage: FC<PlayerStatusMessageProps> = ({
+  id,
+  currentPlayer,
+  isGameOver,
+  isBot,
+}) => {
+  const yourTurnLabel = isBot ? ' (Bot thinking...)' : '(Your turn)';
+  return (
+    <div className="player-info">
+      <h2>
+        Player {playerIdToDisplayNumber(id)}
+        {isBot ? ' (Bot)' : ''}{' '}
+        {currentPlayer === id && !isGameOver ? yourTurnLabel : ''}
+      </h2>
+    </div>
+  );
+};
+
+type StoreProps = {
+  value: number;
+  className?: string;
+};
+
+const Store: FC<StoreProps> = ({ value, className }) => {
+  return (
+    <div className={`store ${className}`}>
+      <div className="store-value">{value}</div>
+    </div>
+  );
+};
+
+type NewGameButtonProps = {
+  onClick: () => void;
+};
+
+const NewGameButton: FC<NewGameButtonProps> = ({ onClick }) => {
+  return (
+    <button className="new-game-btn" onClick={onClick}>
+      New Game
+    </button>
+  );
+};
+
+type PitProps = {
+  stones: number;
+  isDisabled?: boolean;
+  onClick?: () => void;
+};
+
+const Pit: FC<PitProps> = ({ isDisabled, onClick, stones }) => {
+  return (
+    <button className="pit" disabled={isDisabled} onClick={onClick}>
+      <div className="marble-count">{stones}</div>
+      {Array.from({ length: Math.min(stones, 6) }).map((_, i) => (
+        <div key={i} className="marble"></div>
+      ))}
+    </button>
+  );
+};
