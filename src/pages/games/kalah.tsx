@@ -1,7 +1,10 @@
+import { BackButton } from '@/components/backButton';
+
 export const KalahPage = () => {
   return (
     <div className="kalah-game">
       <header>
+        <BackButton />
         <h1>Kalah</h1>
       </header>
       <main>

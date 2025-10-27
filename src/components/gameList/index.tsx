@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { games } from '@/data/games';
 
-import './gameList.css';
+import './styles.css';
 
 export const GameList = () => {
   const navigate = useNavigate();
