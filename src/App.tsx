@@ -1,3 +1,5 @@
+import GameList from './components/GameList';
+
 import './App.css';
 
 function App() {
@@ -7,8 +9,7 @@ function App() {
         <h1>Board Games Collection</h1>
       </header>
       <main>
-        <p>Select a game to play!</p>
-        {/* Games will be added here */}
+        <GameList />
       </main>
     </div>
   );
