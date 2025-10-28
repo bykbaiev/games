@@ -1,20 +1,18 @@
-import { useState, useEffect, useRef, type FC } from 'react';
+import { useState, type FC } from 'react';
 
 import { kalahGameSpec } from '@/games/kalah';
-import { botTurn } from '@/bots/play';
-import type { GameState } from '@/engine/types';
-import type { KalahSnapshot, PitIdx } from '@/games/types';
+import type { KalahGameState, PitIdx } from '@/games/types';
+
+import { useBot } from './useBot';
 
 import './styles.css';
 
 export function KalahGameBoard() {
-  const [gameState, setGameState] = useState<GameState<KalahSnapshot>>(
+  const [gameState, setGameState] = useState<KalahGameState>(
     kalahGameSpec.setup()
   );
-  const [isBotThinking, setIsBotThinking] = useState(false);
-  const botThinkingTimeoutId = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+
+  const clearBotState = useBot(gameState, setGameState);
 
   const winner = kalahGameSpec.winner(gameState);
   const store0 = gameState.snapshot.stores[0];
@@ -46,31 +44,9 @@ export function KalahGameBoard() {
   };
 
   const resetGame = () => {
-    if (botThinkingTimeoutId.current) {
-      clearTimeout(botThinkingTimeoutId.current);
-    }
-
-    setIsBotThinking(false);
+    clearBotState();
     setGameState(kalahGameSpec.setup());
   };
-
-  useEffect(() => {
-    if (gameState.ended || gameState.currentPlayer !== 1 || isBotThinking) {
-      return;
-    }
-
-    setIsBotThinking(true);
-    const nextState = kalahGameSpec.reducer(gameState, botTurn(gameState));
-
-    if (botThinkingTimeoutId.current) {
-      clearTimeout(botThinkingTimeoutId.current);
-    }
-
-    botThinkingTimeoutId.current = setTimeout(() => {
-      setGameState(nextState);
-      setIsBotThinking(false);
-    }, 1000);
-  }, [gameState, isBotThinking]);
 
   return (
     <div className="kalah-container">
